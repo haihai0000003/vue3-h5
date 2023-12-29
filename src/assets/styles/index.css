@@ -1,0 +1,22 @@
+
+body {
+    height: 100%;
+    margin: 0 auto;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+    /* color: var(--van-text-color);
+    background-color: var(--color-background-2); */
+}
+
+html {
+    height: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+#app {
+    margin: 0 auto;
+    height: 100%;
+}
