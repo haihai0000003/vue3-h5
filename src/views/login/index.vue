@@ -10,30 +10,28 @@
             </div>
             <div class="login-input">
                 <van-config-provider :theme-vars="telVars">
-
-                    <van-field style="font-size: 18px;" v-model="tel" type="tel" placeholder="请输入手机号" label="手机号">
+                    
+                    <van-field style="font-size: 18px;" :maxlength="13" v-model="tel" type="tel" placeholder="请输入手机号" label="手机号">
                         <template #label>
                             <div>
-                                <span style="marginRight:3px;">+86</span><van-icon  size="16px" name="arrow-down" />
+                                <span style="marginRight:3px;">+{{ beforeTel }}</span><van-icon  size="16px" name="arrow-down" />
                             </div>
+                        </template>
+                        <template #input>
+                            <input :maxlength="13" ref="inputTel" @input="telInput" @paste.prevent="telPaste" pattern="[0-9]*" v-model="tel" class="van-field__control" type="tel" placeholder="请输入手机号" label="手机号"/>
                         </template>
                     </van-field>
                 </van-config-provider>
             </div>
             <div class="login-btn">
-                <van-button type="primary" :maxlength="11" :disabled="disabled" @click="getMessage" block>获取短信验证码</van-button>
+                <van-button type="primary" :disabled="disabled" @click="getMessage" block>获取短信验证码</van-button>
             </div>
             <div class="login-agree">
-                <transition
-                    name="animate__animated"
-                    enter-active-class="animate__animated animate__headShake"
-                >
-                    <van-checkbox :key="animateKey"  shape="square" class="login-checkbox" icon-size="14px" v-model="checked">
-                        <span class="agree-desc">
-                            已阅读并同意<span>“用户协议”</span>和<span>“隐私政策”</span>
-                        </span>
-                    </van-checkbox>
-                </transition>
+                <van-checkbox   shape="square" :class="{'animate__animated animate__headShake': showAni}" class="login-checkbox" icon-size="14px" v-model="checked">
+                    <span class="agree-desc">
+                        已阅读并同意<span>“用户协议”</span>和<span>“隐私政策”</span>
+                    </span>
+                </van-checkbox>
                 
             </div>
         </div>
@@ -59,34 +57,83 @@
 </template>
 <script setup>
     import Header from '@/Layout/components/Header/index.vue'
-    import { ref,reactive,computed } from 'vue'
+    import { ref,reactive,computed,watch, nextTick } from 'vue'
     import { useRouter } from 'vue-router'
     const router = useRouter()
     const tel = ref('')
     const checked = ref(false)
-    const animateKey = ref(1)
-    
-    const showPopover = ref(false);
+    const showAni = ref(false)
+    const inputTel = ref()
+    const beforeTel = ref('86')
 
+    const disabled = computed(() => tel.value.toString().length != 13)
 
-    const disabled = computed(() => tel.value.toString().length != 11)
     const telVars = reactive({
         fieldLabelWidth: '3em',
         cellHorizontalPadding: '0'
     })
 
+    
+    const telFilter = (value) => {
+        return value.replace(/\s/g, '').replace(/(\d{3})(\d{0,4})(\d{0,4})/, '$1 $2 $3').trim()
+
+        
+    }
+    // 粘贴事件,取出粘贴文本中的数字
+    const telPaste = (e) => {
+        const str = e.clipboardData.getData('text')
+        const num = str.slice(0,11)
+        const numFilter = strFilter(num)
+        nextTick(() => {
+            tel.value = telFilter(numFilter)
+        })
+    }
+
+    // 取出字符串中的数字
+    const strFilter = (str) => {  
+        let matches = str.match(/\d+/g);  
+        if (matches == null) {  
+            return "";  
+        } else {  
+            return matches.join("");  
+        }  
+    }
+
+    const telInput = (event) => {
+        let value = event.target.value
+        console.log(value)
+        if(event.inputType == 'insertText') {
+            value = value.replace(/\s/g, "")
+            let numericRegex = /^\d*$/
+            if (!numericRegex.test(value)) {
+                value = value.slice(0, value.length - 1); // 删除最后一个非数字字符
+            }
+            tel.value = telFilter(value)
+        } else {
+            // 记录光标位置，每次删除后设置记录的光标位置，否则会错乱
+            const valueStart = inputTel.value.selectionStart
+            tel.value = telFilter(value)
+            if(valueStart) {
+                nextTick(() => {
+                    inputTel.value.focus()
+                    inputTel.value.setSelectionRange(valueStart ,valueStart)
+                })
+            }
+        }
+    }
+
     const getMessage = () => {
         if(!checked.value) {
             
-            animateKey.value = new Date().getTime()
-            showPopover.value = true
+            showAni.value = true
             setTimeout(() => {
-                showPopover.value = false
+                showAni.value = false
             },1000)
         } else {
-            router.push({path: '/login/message',query: {tel:tel.value}})
+            router.push({path: '/login/message',query: {tel:beforeTel.tel.value.replace(/\s/g, ''),start: beforeTel}})
         }
     }
+    
     
 </script>
 <style scoped lang="scss">
@@ -152,10 +199,9 @@
                 display: flex;
                 justify-content: center;
                 .agree-desc {
-                    font-size: 14px;
+                    font-size: 12px;
                     text-align: center;
-                    letter-spacing: 1px;
-                    line-height: 28px;
+                    line-height: 24px;
                 }
             }
             

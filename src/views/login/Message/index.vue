@@ -6,17 +6,19 @@
                 输入验证码
             </div>
             <div class="message-tel">
-                验证码已发送至+<span class="tel">{{route.query.tel}}</span>
+                验证码已发送至+<span>{{ route.query.start }}</span><span class="tel">{{route.query.tel}}</span>
             </div>
             <div class="message-input">
-                <input class="input" v-model="inputNumber1" maxlength="1" type="number" />
-                <input class="input" v-model="inputNumber2" maxlength="1" type="number" />
-                <input class="input" v-model="inputNumber3" maxlength="1" type="number"/>
-                <input class="input" v-model="inputNumber4" maxlength="1" type="number" />
+                <div class="inputDiv" @click="inputDivClick" v-for="(item,index) in 4" :key="index">{{ inputValue.toString()[index] }}</div>
+                <!-- <input class="input" ref="input1" v-model="inputNumber1" autofocus maxlength="1" type="tel" />
+                <input class="input" v-model="inputNumber2" maxlength="1" type="tel" />
+                <input class="input" v-model="inputNumber3" maxlength="1" type="tel"/>
+                <input class="input" v-model="inputNumber4" maxlength="1" type="tel" /> -->
             </div>
-            <div>
+            <input  v-model="inputValue" ref="input" type="number" pattern="[0-9]*" @input="inputFunc" class="input" />
+            <!-- <div>
                 倒计时
-            </div>
+            </div> -->
         </div>
     </div>
    
@@ -24,14 +26,30 @@
 
 <script setup>
     import { useRoute } from 'vue-router'
-    import { ref } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
     import Header from '@/Layout/components/Header/index.vue'
     const route = useRoute()
-    const inputNumber1 = ref()
-    const inputNumber2 = ref()
-    const inputNumber3 = ref()
-    const inputNumber4 = ref()
+    // const msgValue = ref([])
+    const input = ref()
+    const inputValue = ref('')
+    const inputFunc = (e) => {
+        let value = e.target.value
+        if(value.length > 4) {
+            inputValue.value = value.slice(0,4)
+        }
+    }
+    const inputDivClick = () => {
+        input.value.focus()
+    }
+    onMounted(() => {
+        input.value.focus()
+    })
 
+    watch(inputValue,(newValue,oldValue) => {
+        if(newValue.toString().length >= 4) {
+            console.log(inputValue.value)
+        }
+    })
 </script>
 
 <style lang="scss" scoped>
@@ -58,7 +76,10 @@
                 height: 48px;
                 width: 100%;
                 justify-content:space-between;
-                .input {
+                .inputDiv {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     height: 100%;
                     width: 50px;
                     border: none;
@@ -69,7 +90,13 @@
                     text-align: center;
                     caret-color: #92B9FC;
                     font-size: 20px;
+                    // 解决ios下边框有圆角的问题
+                    border-radius: 0;
                 }   
+            }
+            .input {
+                opacity: 0;
+                z-index: -999;
             }
         }
     }
