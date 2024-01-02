@@ -16,9 +16,12 @@
                 <input class="input" v-model="inputNumber4" maxlength="1" type="tel" /> -->
             </div>
             <input  v-model="inputValue" ref="input" type="number" pattern="[0-9]*" @input="inputFunc" class="input" />
-            <!-- <div>
-                倒计时
-            </div> -->
+            <van-count-down :time="time" ref="countDown">
+                <template #default="timeData">
+                    <span class="seconds" v-if="timeData.seconds != 0">{{ timeData.seconds }}后重新获取</span>
+                    <span class="seconds" v-else @click="getMessage">重新获取</span>
+                </template>
+            </van-count-down>
         </div>
     </div>
    
@@ -32,6 +35,8 @@
     // const msgValue = ref([])
     const input = ref()
     const inputValue = ref('')
+    const time = ref(60 * 1000)
+    const countDown = ref()
     const inputFunc = (e) => {
         let value = e.target.value
         if(value.length > 4) {
@@ -50,6 +55,11 @@
             console.log(inputValue.value)
         }
     })
+
+    const getMessage = () => {
+        countDown.value.reset()
+        console.log(countDown.value)
+    }
 </script>
 
 <style lang="scss" scoped>
@@ -97,6 +107,10 @@
             .input {
                 opacity: 0;
                 z-index: -999;
+            }
+            .seconds {
+                letter-spacing: 0.5px;
+                color: #969696;
             }
         }
     }

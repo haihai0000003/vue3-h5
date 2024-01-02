@@ -4,7 +4,7 @@ import App from './App.vue'
 import 'normalize.css'
 import 'vant/lib/index.css'
 import router from '@/router'
-import { Button, Tabbar, TabbarItem, NavBar, Icon, Field,ConfigProvider,Checkbox,Grid, GridItem, NumberKeyboard  } from 'vant';
+import { Button, Tabbar, TabbarItem, NavBar, Icon, Field,ConfigProvider,Checkbox,Grid, GridItem, NumberKeyboard,CountDown  } from 'vant';
 import { createPinia } from 'pinia'
 import '@/assets/styles/index.css'
 import './router/permission'
@@ -24,6 +24,7 @@ app.use(Checkbox)
 app.use(Grid)
 app.use(GridItem)
 app.use(NumberKeyboard)
+app.use(CountDown)
 router.isReady().then(() => {
     app.mount("#app")
   })
