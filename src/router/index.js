@@ -18,18 +18,29 @@ export const constantRoutes = [
             name: "Mine",
             meta: {
                 title: "我的",
-                affix: true
+                affix: true,
+                keepAlive: true
             }
             }
         ]
     },
     {
         path: "/login",
-        component: Login
+        component: Login,
+        name: 'login',
+        meta: {
+            title: "手机号",
+            keepAlive: true
+        }
     },
     {
         path: "/login/message",
-        component: Message
+        component: Message,
+        name: 'login_message',
+        meta: {
+            title: "验证码",
+            keepAlive: false
+        }
     }
 ]
 

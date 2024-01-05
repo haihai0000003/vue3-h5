@@ -1,6 +1,7 @@
 import router from "@/router"
 import { getToken } from "@/utils/auth"
 import { useUserStore } from "@/store/modules/user"
+import { useCachedViewStoreHook } from "@/store/modules/cachedView";
 
 const whiteListByPath = ["/login","/login/message"]
 
@@ -18,6 +19,7 @@ export default isWhiteList
 router.beforeEach(async (to, _from, next) => {
     const userStore = useUserStore()
     const token = getToken()
+    useCachedViewStoreHook().addCachedView(to)
     console.log(token)
     // 判断该用户是否已经登录
     if (!token) {

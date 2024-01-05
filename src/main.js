@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import 'lib-flexible/flexible'
 import App from './App.vue'
+// import { store } from "./store";
+
 import 'normalize.css'
 import 'vant/lib/index.css'
 import router from '@/router'
@@ -25,6 +27,7 @@ app.use(Grid)
 app.use(GridItem)
 app.use(NumberKeyboard)
 app.use(CountDown)
+// app.use(store)
 router.isReady().then(() => {
     app.mount("#app")
   })
